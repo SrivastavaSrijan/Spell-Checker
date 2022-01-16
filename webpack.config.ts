@@ -1,18 +1,18 @@
 import path from 'path';
-import {Configuration, DefinePlugin} from 'webpack';
+import { Configuration, DefinePlugin } from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
-
+const DotEnv = require('dotenv-webpack');
 const webpackConfig = (): Configuration => ({
     entry: './src/index.tsx',
     ...(process.env.production || !process.env.development
         ? {}
-        : {devtool: 'eval-source-map'}),
+        : { devtool: 'eval-source-map' }),
 
     resolve: {
         extensions: ['.ts', '.tsx', '.js'],
-        plugins: [new TsconfigPathsPlugin({configFile: './tsconfig.json'})],
+        plugins: [new TsconfigPathsPlugin({ configFile: './tsconfig.json' })],
     },
     output: {
         path: path.join(__dirname, '/build'),
@@ -29,8 +29,8 @@ const webpackConfig = (): Configuration => ({
                 exclude: /build/,
             },
             {
-                test: /\.s?css$/,
-                use: ['style-loader', 'css-loader'],
+                test: /\.s[ac]ss$/i,
+                use: ['style-loader', 'css-loader', 'sass-loader'],
             },
         ],
     },
@@ -45,9 +45,7 @@ const webpackConfig = (): Configuration => ({
             template: './public/index.html',
         }),
         // DefinePlugin allows you to create global constants which can be configured at compile time
-        new DefinePlugin({
-            'process.env': process.env.production || !process.env.development,
-        }),
+        new DotEnv(),
         new ForkTsCheckerWebpackPlugin({
             // Speeds up TypeScript type checking and ESLint linting (by moving each to a separate process)
             eslint: {
