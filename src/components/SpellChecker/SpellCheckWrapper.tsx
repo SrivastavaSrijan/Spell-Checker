@@ -1,10 +1,4 @@
-import React, {
-    Dispatch,
-    FC,
-    SetStateAction,
-    useEffect,
-    useState,
-} from 'react';
+import React, { Dispatch, FC, SetStateAction, useEffect } from 'react';
 import { invokeSpellCheck, SpellCheckData } from '../../api/invokeSpellCheck';
 import { AsyncResponse, useAsync } from '../../hook/useAsync';
 import { IncorrectWordData } from '../../App';
@@ -21,20 +15,11 @@ interface SpellCheckWrapperProps {
 const SpellCheckWrapper: FC<SpellCheckWrapperProps> = (
     prop: SpellCheckWrapperProps,
 ) => {
-    const [suggestions, setSuggestions]: [
-        JSX.Element[],
-        Dispatch<SetStateAction<JSX.Element[]>>,
-    ] = useState([]);
-
     const { text, setIncorrectWords, children } = prop;
     const { response, isLoading, hasError }: AsyncResponse = useAsync(
         invokeSpellCheck,
         [text],
     );
-    const createSpellCheckerDropdown = (spellCheckResponse: SpellCheckData[]) =>
-        spellCheckResponse?.map((response: SpellCheckData) => (
-            <span key={response.offset}>{response.word}</span>
-        ));
     const generateIncorrectWords = (
         spellCheckResponse: SpellCheckData[],
     ): IncorrectWordData => {
@@ -50,7 +35,6 @@ const SpellCheckWrapper: FC<SpellCheckWrapperProps> = (
     };
     useEffect(() => {
         const spellCheckResponse = response as SpellCheckData[];
-        setSuggestions(createSpellCheckerDropdown(spellCheckResponse));
         const incorrectWords = generateIncorrectWords(spellCheckResponse);
         setIncorrectWords(incorrectWords);
         return () => {
@@ -74,7 +58,7 @@ const SpellCheckWrapper: FC<SpellCheckWrapperProps> = (
                         </svg>
                     </div>
                 ) : (
-                    suggestions
+                    ''
                 )}
             </div>
         </>
