@@ -1,57 +1,32 @@
-import React, { FormEvent, MouseEvent, TouchEvent, useRef } from 'react';
+import React, { MouseEvent, TouchEvent } from 'react';
 import { SpellCheckData } from '../../api/invokeSpellCheck';
-import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
+import { ContextMenu, MenuItem } from 'react-contextmenu';
 import useConstant from 'use-constant';
+import { Edit } from 'use-editable';
 
 interface SpellCheckIncorrectWordProps {
     word: string;
     payload: SpellCheckData;
+    index: number;
+    editFunctions: Edit;
 }
 
 const SpellCheckIncorrectWord: React.FC<SpellCheckIncorrectWordProps> = (
     props: SpellCheckIncorrectWordProps,
 ) => {
-    const { word, payload } = props;
-    const spanToMutate = useRef(null);
-    const removeStyles = (event: FormEvent<HTMLSpanElement>) => {
-        const { classList } = event.target as HTMLElement;
-        classList.remove(...classList.values());
-    };
-    const selectStyles = (type: string) => {
-        switch (type) {
-            case 'spelling':
-                return 'spelling-error';
-            case 'grammar':
-                return 'grammar-error';
-            case 'style':
-                return 'lingo-error';
-        }
-    };
+    const { word, payload, index, editFunctions } = props;
 
-    const onContextMenu = (event: MouseEvent<HTMLSpanElement>) => {
-        event.preventDefault();
-    };
     const onContextMenuClick = (
         event: MouseEvent<HTMLDivElement> | TouchEvent<HTMLDivElement>,
         data: { wordToReplace: string },
     ) => {
         event.preventDefault();
-        const span = spanToMutate.current as HTMLSpanElement;
-        span.textContent = data.wordToReplace + ' ';
+        const { text } = editFunctions.getState();
+        editFunctions.update(text.replace(word, data.wordToReplace + ' '));
     };
-    const uuid = useConstant(() => word + payload.offset.toString());
+    const uuid = useConstant(() => word + index);
     return (
         <span>
-            <ContextMenuTrigger id={uuid} renderTag="span" holdToDisplay={200}>
-                <span
-                    className={`incorrect-word ${selectStyles(payload.type)}`}
-                    onInput={removeStyles}
-                    onContextMenu={onContextMenu}
-                    ref={spanToMutate}
-                >
-                    {word}
-                </span>
-            </ContextMenuTrigger>
             <ContextMenu id={uuid}>
                 <p>{payload.description}</p>
                 <hr />

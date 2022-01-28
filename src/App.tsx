@@ -1,6 +1,8 @@
 import React, {
     Dispatch,
     SetStateAction,
+    FormEvent,
+    MouseEvent,
     useEffect,
     useRef,
     useState,
@@ -11,6 +13,7 @@ import SpellCheckWrapper from './components/SpellChecker/SpellCheckWrapper';
 import { Edit, useEditable } from 'use-editable';
 import { SpellCheckData } from './api/invokeSpellCheck';
 import SpellCheckIncorrectWord from './components/SpellChecker/SpellCheckIncorrectWord';
+import { ContextMenuTrigger } from 'react-contextmenu';
 export interface IncorrectWordData {
     [key: string]: SpellCheckData;
 }
@@ -31,8 +34,26 @@ const App: React.FC = () => {
         };
     }, [incorrectWords]);
     const editorRef = useRef(null);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const editFunctions: Edit = useEditable(editorRef, setText);
+
+    const removeStylesAndUpdate = (event: FormEvent<HTMLSpanElement>) => {
+        const { classList } = event.target as HTMLElement;
+        classList.remove(...classList.values());
+    };
+    const selectStyles = (type: string) => {
+        switch (type) {
+            case 'spelling':
+                return 'spelling-error';
+            case 'grammar':
+                return 'grammar-error';
+            case 'style':
+                return 'lingo-error';
+        }
+    };
+
+    const onContextMenu = (event: MouseEvent<HTMLSpanElement>) => {
+        event.preventDefault();
+    };
     return (
         <div className="wrapper">
             <h1>Spellchecker Component</h1>
@@ -47,7 +68,6 @@ const App: React.FC = () => {
                     spellCheck="false"
                     data-edit="true"
                 >
-                    {/* {text.split(/\r?\n/).map((content, i, arr) => ( */}
                     <React.Fragment>
                         {text
                             ?.match(/\b((\w+)'?(\w+)?(\W+))/g)
@@ -55,15 +75,24 @@ const App: React.FC = () => {
                                 Object.keys(incorrectWords).includes(
                                     formatText(wordMatched),
                                 ) ? (
-                                    <SpellCheckIncorrectWord
-                                        key={j}
-                                        word={wordMatched}
-                                        payload={
-                                            incorrectWords[
-                                                formatText(wordMatched)
-                                            ]
-                                        }
-                                    />
+                                    <ContextMenuTrigger
+                                        id={wordMatched + j}
+                                        renderTag="span"
+                                        holdToDisplay={200}
+                                    >
+                                        <span
+                                            className={`incorrect-word ${selectStyles(
+                                                incorrectWords[
+                                                    formatText(wordMatched)
+                                                ].type,
+                                            )}`}
+                                            id={wordMatched + j}
+                                            onInput={removeStylesAndUpdate}
+                                            onContextMenu={onContextMenu}
+                                        >
+                                            {wordMatched}
+                                        </span>
+                                    </ContextMenuTrigger>
                                 ) : (
                                     <span key={j} className="correct">
                                         {wordMatched}
@@ -71,9 +100,25 @@ const App: React.FC = () => {
                                 ),
                             )}
                     </React.Fragment>
-                    {/* ))} */}
                 </div>
             </SpellCheckWrapper>
+            {text
+                ?.match(/\b((\w+)'?(\w+)?(\W+))/g)
+                ?.map((wordMatched: string, j) =>
+                    Object.keys(incorrectWords).includes(
+                        formatText(wordMatched),
+                    ) ? (
+                        <SpellCheckIncorrectWord
+                            key={j}
+                            word={wordMatched}
+                            payload={incorrectWords[formatText(wordMatched)]}
+                            index={j}
+                            editFunctions={editFunctions}
+                        />
+                    ) : (
+                        ''
+                    ),
+                )}
         </div>
     );
 };

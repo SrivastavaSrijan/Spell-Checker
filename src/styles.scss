@@ -58,41 +58,43 @@ div.wrapper {
                 @include box-shadow(orange);
             }
         }
-        nav.react-contextmenu {
-            height: auto;
-            border-radius: 1rem;
-            transition: opacity 250ms ease !important;
-            box-shadow: 0 12px 15px 0 rgba(0, 0, 0, 0.24);
-            font-style: normal;
-            font-weight: normal;
-            color: #0e101a;
-            font-size: 14px;
-            line-height: 21px;
-            -webkit-font-smoothing: antialiased;
-            background: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-            outline: none;
-            color: #333;
+    }
 
-            hr,
-            p {
-                font-size: 0.75rem;
-                padding: 0 1rem;
-                margin-block-start: 0.5em;
-                margin-block-end: 0.25em;
-            }
-            div.react-contextmenu-item {
-                height: 32px;
-                line-height: 32px;
-                cursor: pointer;
-                text-overflow: ellipsis;
-                overflow: hidden;
-                padding: 0 1rem;
-                white-space: nowrap;
-                &:hover {
-                    background-color: $green;
-                }
+    nav.react-contextmenu {
+        height: auto;
+        width: 15vw;
+        border-radius: 1rem;
+        transition: opacity 250ms ease !important;
+        box-shadow: 0 12px 15px 0 rgba(0, 0, 0, 0.24);
+        font-style: normal;
+        font-weight: normal;
+        color: #0e101a;
+        font-size: 14px;
+        line-height: 21px;
+        -webkit-font-smoothing: antialiased;
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        outline: none;
+        color: #333;
+
+        hr,
+        p {
+            font-size: 0.75rem;
+            padding: 0 0.625rem;
+            margin-block-start: 0.5em;
+            margin-block-end: 0.25em;
+        }
+        div.react-contextmenu-item {
+            height: 32px;
+            line-height: 32px;
+            cursor: pointer;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            padding: 0 0.625rem;
+            white-space: nowrap;
+            &:hover {
+                background-color: $green;
             }
         }
     }
